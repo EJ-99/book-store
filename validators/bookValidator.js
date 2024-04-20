@@ -5,33 +5,33 @@ const validateLimit = query('limit')
   .notEmpty()
   .withMessage('limit cannot be empty')
   .isInt()
-  .withMessage('check limit type');
+  .withMessage('check the type of limit');
 
 const validateCurrentPage = query('currentPage')
   .escape()
   .notEmpty()
   .withMessage('currentPage cannot be empty')
   .isInt()
-  .withMessage('check currentPage type');
+  .withMessage('check the type of currentPage');
 
 const validateId = param('id')
   .escape()
   .notEmpty()
   .withMessage('bookId cannot be empty')
   .isInt()
-  .withMessage('check bookId type');
+  .withMessage('check the type of bookId');
 
 const validateCategoryId = query('categoryId')
   .optional()
   .escape()
   .isInt()
-  .withMessage('check currentPage type');
+  .withMessage('check the type of categoryId');
 
 const validateNew = query('new')
   .optional()
   .escape()
   .isBoolean()
-  .withMessage('new field must be boolean type');
+  .withMessage('check the type of new');
 
 module.exports = {
   validateLimit,

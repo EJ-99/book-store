@@ -5,14 +5,14 @@ const validateEmail = body('email')
   .notEmpty()
   .withMessage('email cannot be empty')
   .isEmail()
-  .withMessage('check email type');
+  .withMessage('check the type of email');
 
 const validatePassword = body('password')
   .escape()
   .notEmpty()
   .withMessage('password cannot be empty')
   .isString()
-  .withMessage('check password type');
+  .withMessage('check the type of password');
 
 module.exports = {
   validateEmail,
