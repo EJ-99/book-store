@@ -1,19 +1,14 @@
-const { validationResult, body } = require('express-validator');
-const { StatusCodes } = require('http-status-codes');
-
-const checkValidationResult = (req, res, next) => {
-  const err = validationResult(req);
-  if (err.isEmpty()) return next();
-  return res.status(StatusCodes.BAD_REQUEST).json(err.array());
-};
+const { body } = require('express-validator');
 
 const validateEmail = body('email')
+  .escape()
   .notEmpty()
   .withMessage('email cannot be empty')
   .isEmail()
   .withMessage('check email type');
 
 const validatePassword = body('password')
+  .escape()
   .notEmpty()
   .withMessage('password cannot be empty')
   .isString()
@@ -22,5 +17,4 @@ const validatePassword = body('password')
 module.exports = {
   validateEmail,
   validatePassword,
-  checkValidationResult,
 };

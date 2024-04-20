@@ -2,8 +2,8 @@ const express = require('express');
 const {
   validateEmail,
   validatePassword,
-  checkValidationResult,
 } = require('../validators/userValidator');
+const checkValidationResult = require('../validators/commonValidator');
 const {
   join,
   login,
