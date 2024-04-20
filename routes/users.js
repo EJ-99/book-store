@@ -3,7 +3,7 @@ const {
   validateEmail,
   validatePassword,
 } = require('../validators/userValidator');
-const checkValidationResult = require('../validators/commonValidator');
+const { checkValidationResult } = require('../validators/commonValidator');
 const {
   join,
   login,

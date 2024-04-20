@@ -2,11 +2,13 @@ const express = require('express');
 const {
   validateLimit,
   validateCurrentPage,
-  validateId,
   validateCategoryId,
   validateNew,
 } = require('../validators/bookValidator');
-const checkValidationResult = require('../validators/commonValidator');
+const {
+  checkValidationResult,
+  validateId,
+} = require('../validators/commonValidator');
 const { getAllBooks, getBookDetail } = require('../controller/bookController');
 
 const router = express.Router();
