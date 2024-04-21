@@ -1,13 +1,5 @@
 const pool = require('../db/mariadb');
 
-const insertDeliveryInfo = async (delivery) => {
-  const sql = `INSERT INTO deliveries (address, receiver, contact) VALUES (?, ?, ?)`;
-  const values = [delivery.address, delivery.receiver, delivery.contact];
-  const [result] = await pool.query(sql, values);
-
-  return result.insertId;
-};
-
 const insertOrderInfo = async (deliveryId, orderInfo) => {
   const { firstBookTitle, totalQuantity, totalPrice, userId } = orderInfo;
   const sql = `INSERT INTO orders (book_title, total_quantity, total_price, delivery_id, user_id)
@@ -49,8 +41,7 @@ const deleteCartItems = async (items) => {
   await pool.query(sql, [items]);
 };
 
-const createOrder = async (items, delivery, orderInfo) => {
-  const deliveryId = await insertDeliveryInfo(delivery);
+const createOrder = async (items, deliveryId, orderInfo) => {
   const orderId = await insertOrderInfo(deliveryId, orderInfo);
   await insertOrderedItems(orderId, items);
   await deleteCartItems(items);

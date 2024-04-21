@@ -2,12 +2,18 @@ const { StatusCodes } = require('http-status-codes');
 const service = require('../service/orderService');
 
 const order = async (req, res) => {
-  const { items, delivery, totalQuantity, totalPrice, userId, firstBookTitle } =
-    req.body;
+  const {
+    items,
+    deliveryId,
+    totalQuantity,
+    totalPrice,
+    userId,
+    firstBookTitle,
+  } = req.body;
   const orderInfo = { totalQuantity, totalPrice, userId, firstBookTitle };
 
   try {
-    result = await service.createOrder(items, delivery, orderInfo);
+    result = await service.createOrder(items, deliveryId, orderInfo);
 
     return res.status(StatusCodes.CREATED).end();
   } catch (err) {
