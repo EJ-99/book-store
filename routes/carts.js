@@ -1,9 +1,5 @@
 const express = require('express');
-const {
-  validateBookId,
-  validateQuantity,
-  validateSelected,
-} = require('../validators/cartValidator');
+const validator = require('../validators/cartValidator');
 const {
   validateId,
   checkValidationResult,
@@ -13,18 +9,21 @@ const controller = require('../controller/cartController');
 const router = express.Router();
 router.use(express.json());
 
+// 장바구니 추가
 router.post(
   '/',
-  [validateBookId, validateQuantity, checkValidationResult],
+  [validator.validateAddCart, checkValidationResult],
   controller.addToCart
 );
 
+// (선택된) 장바구니 조회
 router.get(
   '/',
-  [validateSelected, checkValidationResult],
+  [validator.validateGetCarts, checkValidationResult],
   controller.getCartItmes
 );
 
+// 장바구니 삭제
 router.delete(
   '/:id',
   [validateId, checkValidationResult],

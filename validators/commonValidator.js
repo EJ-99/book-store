@@ -12,6 +12,6 @@ const validateId = param('id')
   .notEmpty()
   .withMessage('id cannot be empty')
   .isInt()
-  .withMessage('check the type of id');
+  .withMessage('id must be integer');
 
 module.exports = { checkValidationResult, validateId };

@@ -1,8 +1,5 @@
 const express = require('express');
-const {
-  validateEmail,
-  validatePassword,
-} = require('../validators/userValidator');
+const validator = require('../validators/userValidator');
 const { checkValidationResult } = require('../validators/commonValidator');
 const {
   join,
@@ -14,27 +11,31 @@ const {
 const router = express.Router();
 router.use(express.json());
 
+// 회원가입
 router.post(
   '/join',
-  [validateEmail, validatePassword, checkValidationResult],
+  [validator.validateEmail, validator.validatePassword, checkValidationResult],
   join
 );
 
+// 로그인
 router.post(
   '/login',
-  [validateEmail, validatePassword, checkValidationResult],
+  [validator.validateEmail, validator.validatePassword, checkValidationResult],
   login
 );
 
+// 패스워드 초기화 요청
 router.post(
   '/reset',
-  [validateEmail, checkValidationResult],
+  [validator.validateEmail, checkValidationResult],
   requestPasswordReset
 );
 
+// 패스워드 초기화
 router.put(
   '/reset',
-  [validateEmail, validatePassword, checkValidationResult],
+  [validator.validateEmail, validator.validatePassword, checkValidationResult],
   resetPassword
 );
 
