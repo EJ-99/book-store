@@ -3,7 +3,7 @@ const pool = require('../db/mariadb');
 const findAllBooks = async (query) => {
   const { currentPage, limit, categoryId, new: isNew } = query;
   const offset = (currentPage - 1) * limit;
-  let sql = `SELECT *,
+  let sql = `SELECT SQL_CALC_FOUND_ROWS *,
               (SELECT count(*) FROM likes WHERE liked_book_id=books.id) AS likes 
               FROM books`;
 
@@ -18,8 +18,15 @@ const findAllBooks = async (query) => {
 
   sql += ` LIMIT ${limit} OFFSET ${offset}`;
 
-  const [result] = await pool.execute(sql);
-  return result;
+  const [books] = await pool.execute(sql);
+
+  sql = `SELECT found_rows() AS totalCount`;
+  const [pagination] = await pool.execute(sql);
+
+  return {
+    books,
+    pagination: { ...pagination[0], currentPage: parseInt(currentPage) },
+  };
 };
 
 const findBookById = async (bookId, userId) => {

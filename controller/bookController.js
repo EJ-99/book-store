@@ -4,7 +4,7 @@ const { findAllBooks, findBookById } = require('../service/bookService');
 const getAllBooks = async (req, res) => {
   try {
     const result = await findAllBooks(req.query);
-    if (result.length) {
+    if (result.books.length) {
       return res.status(StatusCodes.OK).json(result);
     }
     return res.status(StatusCodes.NOT_FOUND).end();
