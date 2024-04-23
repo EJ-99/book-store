@@ -5,6 +5,7 @@ const {
   checkValidationResult,
 } = require('../validators/commonValidator');
 const controller = require('../controller/cartController');
+const authenticateToken = require('../auth');
 
 const router = express.Router();
 router.use(express.json());
@@ -13,6 +14,7 @@ router.use(express.json());
 router.post(
   '/',
   [validator.validateAddCart, checkValidationResult],
+  authenticateToken,
   controller.addToCart
 );
 
@@ -20,6 +22,7 @@ router.post(
 router.get(
   '/',
   [validator.validateGetCarts, checkValidationResult],
+  authenticateToken,
   controller.getCartItmes
 );
 
@@ -27,6 +30,7 @@ router.get(
 router.delete(
   '/:id',
   [validateId, checkValidationResult],
+  authenticateToken,
   controller.removeCartItem
 );
 

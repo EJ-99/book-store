@@ -23,18 +23,25 @@ const findAllBooks = async (query) => {
 };
 
 const findBookById = async (bookId, userId) => {
-  const sql = `SELECT books.id, title, img, categories.name as category, form,
+  let sql = `SELECT books.id, title, img, categories.name as category, form,
                 isbn, summary, detail, author, pages, contents, price, pub_date,
                 (SELECT count(*) FROM likes 
-                  WHERE liked_book_id=books.id) AS likes,
-                (SELECT EXISTS (SELECT * FROM likes 
-                    WHERE liked_book_id=books.id AND user_id="${userId}")) AS liked
-                FROM books
-                LEFT JOIN categories
-                ON categories.id = books.category_id
-                WHERE books.id = "${bookId}"`;
+                  WHERE liked_book_id=books.id) AS likes`;
+  const values = [];
 
-  const [result] = await pool.execute(sql);
+  if (userId) {
+    sql += `, (SELECT EXISTS (SELECT * FROM likes 
+                WHERE liked_book_id=books.id AND user_id= ? )) AS liked`;
+    values.push(userId);
+  }
+
+  sql += ` FROM books
+          LEFT JOIN categories
+          ON categories.id = books.category_id
+          WHERE books.id = ?`;
+  values.push(bookId);
+
+  const [result] = await pool.execute(sql, values);
   return result[0];
 };
 

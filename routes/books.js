@@ -5,6 +5,7 @@ const {
   validateId,
 } = require('../validators/commonValidator');
 const { getAllBooks, getBookDetail } = require('../controller/bookController');
+const authenticateToken = require('../auth');
 
 const router = express.Router();
 router.use(express.json());
@@ -13,6 +14,11 @@ router.use(express.json());
 router.get('/', [validateGetBooks, checkValidationResult], getAllBooks);
 
 // 상세 도서 조회
-router.get('/:id', [validateId, checkValidationResult], getBookDetail);
+router.get(
+  '/:id',
+  [validateId, checkValidationResult],
+  authenticateToken,
+  getBookDetail
+);
 
 module.exports = router;

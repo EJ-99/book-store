@@ -40,10 +40,10 @@ const getCartItems = async (userId, selected) => {
   return result;
 };
 
-const removeCartItem = async (id) => {
-  const sql = `DELETE FROM cartItems WHERE id = ?`;
+const removeCartItem = async (userId, cartItemId) => {
+  const sql = `DELETE FROM cartItems WHERE id = ? AND user_id = ?`;
 
-  const [result] = await pool.query(sql, id);
+  const [result] = await pool.query(sql, [cartItemId, userId]);
 
   return result;
 };

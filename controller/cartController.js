@@ -1,11 +1,33 @@
 const { StatusCodes } = require('http-status-codes');
 const service = require('../service/cartService');
+const jwt = require('jsonwebtoken');
 
 const addToCart = async (req, res) => {
-  const { userId, bookId, quantity } = req.body;
+  const user = req.user;
+
+  if (!user) {
+    return res
+      .status(StatusCodes.UNAUTHORIZED)
+      .json({ message: '로그인이 필요한 서비스입니다' });
+  }
+
+  if (user instanceof jwt.TokenExpiredError) {
+    return res
+      .status(StatusCodes.UNAUTHORIZED)
+      .json({ message: '로그인 세션이 만료되었습니다.' });
+  }
+
+  if (user instanceof jwt.JsonWebTokenError) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: '유효하지 않은 토큰입니다.' });
+  }
+
+  const userId = user.id;
+  const { bookId, quantity } = req.body;
 
   try {
-    const result = await service.updateCart(userId, bookId, quantity);
+    await service.updateCart(userId, bookId, quantity);
 
     return res.status(StatusCodes.OK).end();
   } catch (err) {
@@ -15,7 +37,28 @@ const addToCart = async (req, res) => {
 };
 
 const getCartItmes = async (req, res) => {
-  const { userId, selected } = req.body;
+  const user = req.user;
+
+  if (!user) {
+    return res
+      .status(StatusCodes.UNAUTHORIZED)
+      .json({ message: '로그인이 필요한 서비스입니다' });
+  }
+
+  if (user instanceof jwt.TokenExpiredError) {
+    return res
+      .status(StatusCodes.UNAUTHORIZED)
+      .json({ message: '로그인 세션이 만료되었습니다.' });
+  }
+
+  if (user instanceof jwt.JsonWebTokenError) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: '유효하지 않은 토큰입니다.' });
+  }
+
+  const userId = user.id;
+  const { selected } = req.body;
 
   try {
     const result = await service.getCartItems(userId, selected);
@@ -32,10 +75,30 @@ const getCartItmes = async (req, res) => {
 };
 
 const removeCartItem = async (req, res) => {
-  const { id } = req.params;
+  const user = req.user;
 
+  if (!user) {
+    return res
+      .status(StatusCodes.UNAUTHORIZED)
+      .json({ message: '로그인이 필요한 서비스입니다' });
+  }
+
+  if (user instanceof jwt.TokenExpiredError) {
+    return res
+      .status(StatusCodes.UNAUTHORIZED)
+      .json({ message: '로그인 세션이 만료되었습니다.' });
+  }
+
+  if (user instanceof jwt.JsonWebTokenError) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: '유효하지 않은 토큰입니다.' });
+  }
+
+  const cartItemId = req.params.id;
+  const userId = user.id;
   try {
-    const result = await service.removeCartItem(id);
+    const result = await service.removeCartItem(userId, cartItemId);
 
     if (result.affectedRows) return res.status(StatusCodes.OK).end();
 

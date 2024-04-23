@@ -5,16 +5,29 @@ const {
   validateId,
   checkValidationResult,
 } = require('../validators/commonValidator');
+const authenticateToken = require('../auth');
 
 const router = express.Router();
 router.use(express.json());
 
-router.post('/', validateOrder, checkValidationResult, controller.order);
-router.get('/', controller.getOrders);
+// 주문하기
+router.post(
+  '/',
+  validateOrder,
+  checkValidationResult,
+  authenticateToken,
+  controller.order
+);
+
+// 주문 목록 조회
+router.get('/', authenticateToken, controller.getOrders);
+
+//주문 상세 조회
 router.get(
   '/:id',
   validateId,
   checkValidationResult,
+  authenticateToken,
   controller.getOrderDetail
 );
 

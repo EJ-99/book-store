@@ -4,10 +4,22 @@ const {
   checkValidationResult,
 } = require('../validators/commonValidator');
 const { addLike, deleteLike } = require('../controller/likeController');
+const authenticateToken = require('../auth');
+
 const router = express.Router();
 router.use(express.json());
 
-router.post('/:id', [validateId, checkValidationResult], addLike);
-router.delete('/:id', [validateId, checkValidationResult], deleteLike);
+router.post(
+  '/:id',
+  [validateId, checkValidationResult],
+  authenticateToken,
+  addLike
+);
+router.delete(
+  '/:id',
+  [validateId, checkValidationResult],
+  authenticateToken,
+  deleteLike
+);
 
 module.exports = router;

@@ -60,14 +60,14 @@ const getOrders = async (userId) => {
   return result;
 };
 
-const getOrderDetail = async (id) => {
+const getOrderDetail = async (userId, orderId) => {
   const sql = `SELECT book_id, title, author, quantity, price 
                 FROM orderedBooks
                 LEFT JOIN books
                 ON orderedBooks.book_id = books.id
-                WHERE order_id = ?`;
+                WHERE order_id = ? AND (SELECT user_id FROM orders WHERE id = ?) = ?`;
 
-  const [result] = await pool.execute(sql, [id]);
+  const [result] = await pool.execute(sql, [orderId, orderId, userId]);
   return result;
 };
 
