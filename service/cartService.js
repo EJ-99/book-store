@@ -1,4 +1,5 @@
 const pool = require('../db/mariadb');
+const { objectKeysToCamel } = require('../utils/formatToCamelCase');
 
 const findCartItem = async (userId, bookId) => {
   const sql = `SELECT * FROM cartItems WHERE user_id = ? AND book_id = ?`;
@@ -28,15 +29,15 @@ const updateCart = async (userId, bookId, quantity) => {
 };
 
 const getCartItems = async (userId, selected) => {
-  const sql = `SELECT cartItems.id, book_id, title, summary, quantity, price
+  const sql = `SELECT cartItems.id AS cartItemId, book_id, title, summary, quantity, price
                 FROM cartItems
                 LEFT JOIN books
                 ON cartItems.book_id = books.id
                 WHERE user_id = ?
                 ${selected ? 'AND cartItems.id IN (?)' : ''}`;
 
-  const [result] = await pool.query(sql, [userId, selected]);
-
+  let [result] = await pool.query(sql, [userId, selected]);
+  result = result.map((item) => objectKeysToCamel(item));
   return result;
 };
 

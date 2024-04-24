@@ -1,4 +1,5 @@
 const pool = require('../db/mariadb');
+const { objectKeysToCamel } = require('../utils/formatToCamelCase');
 
 const insertOrderInfo = async (deliveryId, orderInfo) => {
   const { firstBookTitle, totalQuantity, totalPrice, userId } = orderInfo;
@@ -56,7 +57,8 @@ const getOrders = async (userId) => {
                 ON orders.delivery_id = deliveries.id
                 WHERE orders.user_id = ?`;
 
-  const [result] = await pool.execute(sql, [userId]);
+  let [result] = await pool.execute(sql, [userId]);
+  result = result.map((item) => objectKeysToCamel(item));
   return result;
 };
 
@@ -67,7 +69,8 @@ const getOrderDetail = async (userId, orderId) => {
                 ON orderedBooks.book_id = books.id
                 WHERE order_id = ? AND (SELECT user_id FROM orders WHERE id = ?) = ?`;
 
-  const [result] = await pool.execute(sql, [orderId, orderId, userId]);
+  let [result] = await pool.execute(sql, [orderId, orderId, userId]);
+  result = result.map((item) => objectKeysToCamel(item));
   return result;
 };
 

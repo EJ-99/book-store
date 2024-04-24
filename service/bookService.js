@@ -1,4 +1,5 @@
 const pool = require('../db/mariadb');
+const { objectKeysToCamel } = require('../utils/formatToCamelCase');
 
 const findAllBooks = async (query) => {
   const { currentPage, limit, categoryId, new: isNew } = query;
@@ -18,7 +19,8 @@ const findAllBooks = async (query) => {
 
   sql += ` LIMIT ${limit} OFFSET ${offset}`;
 
-  const [books] = await pool.execute(sql);
+  let [books] = await pool.execute(sql);
+  books = books.map((book) => objectKeysToCamel(book));
 
   sql = `SELECT found_rows() AS totalCount`;
   const [pagination] = await pool.execute(sql);
@@ -48,8 +50,9 @@ const findBookById = async (bookId, userId) => {
           WHERE books.id = ?`;
   values.push(bookId);
 
-  const [result] = await pool.execute(sql, values);
-  return result[0];
+  let [result] = await pool.execute(sql, values);
+  result = objectKeysToCamel(result[0]);
+  return result;
 };
 
 module.exports = {
