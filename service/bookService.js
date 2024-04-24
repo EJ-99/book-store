@@ -20,6 +20,11 @@ const findAllBooks = async (query) => {
   sql += ` LIMIT ${limit} OFFSET ${offset}`;
 
   let [books] = await pool.execute(sql);
+
+  if (books.length === 0) {
+    throw new Error('도서 정보를 찾을 수 없습니다.');
+  }
+
   books = books.map((book) => objectKeysToCamel(book));
 
   sql = `SELECT found_rows() AS totalCount`;
@@ -51,6 +56,11 @@ const findBookById = async (bookId, userId) => {
   values.push(bookId);
 
   let [result] = await pool.execute(sql, values);
+
+  if (result.length === 0) {
+    throw new Error('도서 상세 정보를 찾을 수 없습니다.');
+  }
+
   result = objectKeysToCamel(result[0]);
   return result;
 };

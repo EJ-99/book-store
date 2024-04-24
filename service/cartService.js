@@ -10,13 +10,19 @@ const findCartItem = async (userId, bookId) => {
 const addCartItem = async (userId, bookId, quantity) => {
   const sql = `INSERT INTO cartItems (user_id, book_id, quantity) VALUES (?, ?, ?)`;
   const [result] = await pool.execute(sql, [userId, bookId, quantity]);
-  return result;
+
+  if (result.affectedRows === 0) {
+    throw new Error('장바구니 추가에 실패했습니다.');
+  }
 };
 
 const updateItemQuantity = async (userId, bookId, quantity) => {
   const sql = `UPDATE cartItems SET quantity = quantity + ? WHERE user_id = ? AND book_id = ?`;
   const [result] = await pool.execute(sql, [quantity, userId, bookId]);
-  return result;
+
+  if (result.affectedRows === 0) {
+    throw new Error('장바구니 추가에 실패했습니다.');
+  }
 };
 
 const updateCart = async (userId, bookId, quantity) => {
@@ -37,6 +43,11 @@ const getCartItems = async (userId, selected) => {
                 ${selected ? 'AND cartItems.id IN (?)' : ''}`;
 
   let [result] = await pool.query(sql, [userId, selected]);
+
+  if (result.length === 0) {
+    throw new Error('장바구니 목록이 없습니다');
+  }
+
   result = result.map((item) => objectKeysToCamel(item));
   return result;
 };
@@ -46,7 +57,9 @@ const removeCartItem = async (userId, cartItemId) => {
 
   const [result] = await pool.query(sql, [cartItemId, userId]);
 
-  return result;
+  if (result.affectedRows === 0) {
+    throw new Error('장바구니 항목 삭제에 실패했습니다.');
+  }
 };
 
 module.exports = {

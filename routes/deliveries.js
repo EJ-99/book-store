@@ -2,7 +2,7 @@ const express = require('express');
 const controller = require('../controller/deliveryController');
 const { validateDelivery } = require('../validators/deliveryValidators');
 const { checkValidationResult } = require('../validators/commonValidator');
-const authenticateToken = require('../auth');
+const { authenticateToken } = require('../auth');
 
 const router = express.Router();
 router.use(express.json());

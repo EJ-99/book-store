@@ -14,16 +14,10 @@ const join = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const result = await createUser(email, password);
-
-    if (result.affectedRows === 0) {
-      return res.status(StatusCodes.BAD_REQUEST).end();
-    }
-
+    await createUser(email, password);
     return res.status(StatusCodes.CREATED).end();
   } catch (err) {
-    console.log(err);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end();
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: err.message });
   }
 };
 
@@ -32,20 +26,14 @@ const login = async (req, res) => {
 
   try {
     const user = await verifyPassword(email, password);
+    const token = jwt.sign({ id: user.id }, process.env.PRIVATE_KEY, {
+      expiresIn: '30m',
+    });
 
-    if (user) {
-      const token = jwt.sign({ id: user.id }, process.env.PRIVATE_KEY, {
-        expiresIn: '30m',
-      });
-
-      res.cookie('token', token, { httpOnly: true });
-      return res.status(StatusCodes.OK).end();
-    }
-
-    return res.status(StatusCodes.UNAUTHORIZED).end();
+    res.cookie('token', token, { httpOnly: true });
+    return res.status(StatusCodes.OK).end();
   } catch (err) {
-    console.log(err);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end();
+    return res.status(StatusCodes.UNAUTHORIZED).json({ message: err.message });
   }
 };
 
@@ -57,26 +45,18 @@ const requestPasswordReset = async (req, res) => {
     if (user) {
       return res.status(StatusCodes.OK).json({ email });
     }
-    return res.status(StatusCodes.UNAUTHORIZED).end();
   } catch (err) {
-    console.log(err);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end();
+    return res.status(StatusCodes.NOT_FOUND).json({ message: err.message });
   }
 };
 
 const resetPassword = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const result = await updatePassword(email, password);
-
-    if (result.affectedRows === 0) {
-      return res.status(StatusCodes.BAD_REQUEST).end();
-    }
-
+    await updatePassword(email, password);
     return res.status(StatusCodes.OK).end();
   } catch (err) {
-    console.log(err);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end();
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: err.message });
   }
 };
 

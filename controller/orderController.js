@@ -1,6 +1,6 @@
 const { StatusCodes } = require('http-status-codes');
 const service = require('../service/orderService');
-const jwt = require('jsonwebtoken');
+const { handleTokenError } = require('../auth');
 
 const order = async (req, res) => {
   const user = req.user;
@@ -11,17 +11,8 @@ const order = async (req, res) => {
       .json({ message: '로그인이 필요한 서비스입니다' });
   }
 
-  if (user instanceof jwt.TokenExpiredError) {
-    return res
-      .status(StatusCodes.UNAUTHORIZED)
-      .json({ message: '로그인 세션이 만료되었습니다.' });
-  }
-
-  if (user instanceof jwt.JsonWebTokenError) {
-    return res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ message: '유효하지 않은 토큰입니다.' });
-  }
+  const tokenError = handleTokenError(user, res);
+  if (tokenError) return tokenError;
 
   const userId = user.id;
   const { items, deliveryId, totalQuantity, totalPrice, firstBookTitle } =
@@ -33,8 +24,7 @@ const order = async (req, res) => {
 
     return res.status(StatusCodes.CREATED).end();
   } catch (err) {
-    console.log(err);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).end();
+    res.status(StatusCodes.BAD_REQUEST).json({ message: err.message });
   }
 };
 
@@ -47,31 +37,17 @@ const getOrders = async (req, res) => {
       .json({ message: '로그인이 필요한 서비스입니다' });
   }
 
-  if (user instanceof jwt.TokenExpiredError) {
-    return res
-      .status(StatusCodes.UNAUTHORIZED)
-      .json({ message: '로그인 세션이 만료되었습니다.' });
-  }
-
-  if (user instanceof jwt.JsonWebTokenError) {
-    return res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ message: '유효하지 않은 토큰입니다.' });
-  }
+  const tokenError = handleTokenError(user, res);
+  if (tokenError) return tokenError;
 
   const userId = user.id;
 
   try {
     const result = await service.getOrders(userId);
 
-    if (result.length) {
-      return res.status(StatusCodes.OK).json(result);
-    }
-
-    return res.status(StatusCodes.NOT_FOUND).end();
+    return res.status(StatusCodes.OK).json(result);
   } catch (err) {
-    console.log(err);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).end();
+    res.status(StatusCodes.NOT_FOUND).json({ message: err.message });
   }
 };
 
@@ -84,17 +60,8 @@ const getOrderDetail = async (req, res) => {
       .json({ message: '로그인이 필요한 서비스입니다' });
   }
 
-  if (user instanceof jwt.TokenExpiredError) {
-    return res
-      .status(StatusCodes.UNAUTHORIZED)
-      .json({ message: '로그인 세션이 만료되었습니다.' });
-  }
-
-  if (user instanceof jwt.JsonWebTokenError) {
-    return res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ message: '유효하지 않은 토큰입니다.' });
-  }
+  const tokenError = handleTokenError(user, res);
+  if (tokenError) return tokenError;
 
   const userId = user.id;
   const { id: orderId } = req.params;
@@ -102,14 +69,9 @@ const getOrderDetail = async (req, res) => {
   try {
     const result = await service.getOrderDetail(userId, orderId);
 
-    if (result.length) {
-      return res.status(StatusCodes.OK).json(result);
-    }
-
-    return res.status(StatusCodes.NOT_FOUND).end();
+    return res.status(StatusCodes.OK).json(result);
   } catch (err) {
-    console.log(err);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).end();
+    res.status(StatusCodes.NOT_FOUND).json({ message: err.message });
   }
 };
 

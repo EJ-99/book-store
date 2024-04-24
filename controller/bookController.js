@@ -4,18 +4,14 @@ const { findAllBooks, findBookById } = require('../service/bookService');
 const getAllBooks = async (req, res) => {
   try {
     const result = await findAllBooks(req.query);
-    if (result.books.length) {
-      return res.status(StatusCodes.OK).json(result);
-    }
-    return res.status(StatusCodes.NOT_FOUND).end();
+    return res.status(StatusCodes.OK).json(result);
   } catch (err) {
-    console.log(err);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end();
+    return res.status(StatusCodes.NOT_FOUND).json({ message: err.message });
   }
 };
 
 const getBookDetail = async (req, res) => {
-  const user = req.user;
+  let user = req.user;
 
   if (user instanceof Error) {
     user = null;
@@ -26,13 +22,9 @@ const getBookDetail = async (req, res) => {
 
   try {
     const result = await findBookById(bookId, userId);
-    if (result) {
-      return res.status(StatusCodes.OK).json(result);
-    }
-    return res.status(StatusCodes.NOT_FOUND).end();
+    return res.status(StatusCodes.OK).json(result);
   } catch (err) {
-    console.log(err);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end();
+    return res.status(StatusCodes.NOT_FOUND).json({ message: err.message });
   }
 };
 

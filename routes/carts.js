@@ -5,7 +5,7 @@ const {
   checkValidationResult,
 } = require('../validators/commonValidator');
 const controller = require('../controller/cartController');
-const authenticateToken = require('../auth');
+const { authenticateToken } = require('../auth');
 
 const router = express.Router();
 router.use(express.json());

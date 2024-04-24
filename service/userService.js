@@ -17,21 +17,37 @@ const createUser = async (email, password) => {
   const values = [email, hashed, salt];
   const [result] = await pool.execute(sql, values);
 
+  if (result.affectedRows === 0) {
+    throw new Error('회원 가입에 실패했습니다.');
+  }
+
   return result;
 };
 
 const verifyPassword = async (email, password) => {
-  const user = await findUser(email);
-  if (!user) return false;
+  let user;
+  try {
+    user = await findUser(email);
+  } catch (err) {
+    throw new Error('이메일 혹은 비밀번호가 틀렸습니다.');
+  }
 
   const hashed = hashPassword(password, user.salt);
-  return hashed === user.password ? user : null;
+  if (hashed !== user.password) {
+    throw new Error('이메일 혹은 비밀번호가 틀렸습니다.');
+  }
+
+  return user;
 };
 
 const findUser = async (email) => {
   let sql = `SELECT * FROM users WHERE email = ?`;
   const params = [email];
   const [result] = await pool.execute(sql, params);
+
+  if (result.length === 0) {
+    throw new Error('사용자를 찾을 수 없습니다.');
+  }
 
   return result[0];
 };
@@ -44,7 +60,9 @@ const updatePassword = async (email, password) => {
   const params = [hashed, salt, email];
   const [result] = await pool.execute(sql, params);
 
-  return result;
+  if (result.affectedRows === 0) {
+    throw new Error('비밀번호 업데이트에 실패했습니다.');
+  }
 };
 
 module.exports = { createUser, verifyPassword, findUser, updatePassword };

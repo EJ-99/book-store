@@ -5,7 +5,7 @@ const {
   validateId,
   checkValidationResult,
 } = require('../validators/commonValidator');
-const authenticateToken = require('../auth');
+const { authenticateToken } = require('../auth');
 
 const router = express.Router();
 router.use(express.json());

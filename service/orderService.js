@@ -14,6 +14,10 @@ const insertOrderInfo = async (deliveryId, orderInfo) => {
   ];
   const [result] = await pool.query(sql, values);
 
+  if (result.affectedRows === 0) {
+    throw new Error('주문 등록에 실패했습니다.');
+  }
+
   return result.insertId;
 };
 
@@ -34,12 +38,20 @@ const insertOrderedItems = async (orderId, items) => {
     item.quantity,
   ]);
 
-  await pool.query(sql, [values]);
+  const [result] = await pool.query(sql, [values]);
+
+  if (result.affectedRows === 0) {
+    throw new Error('주문 항목 등록에 실패했습니다.');
+  }
 };
 
 const deleteCartItems = async (items) => {
   const sql = `DELETE FROM cartItems WHERE id IN (?)`;
-  await pool.query(sql, [items]);
+  const [result] = await pool.query(sql, [items]);
+
+  if (result.affectedRows === 0) {
+    throw new Error('장바구니 항목 삭제에 실패했습니다.');
+  }
 };
 
 const createOrder = async (items, deliveryId, orderInfo) => {
@@ -58,6 +70,11 @@ const getOrders = async (userId) => {
                 WHERE orders.user_id = ?`;
 
   let [result] = await pool.execute(sql, [userId]);
+
+  if (result.length === 0) {
+    throw new Error('주문 정보를 찾을 수 없습니다.');
+  }
+
   result = result.map((item) => objectKeysToCamel(item));
   return result;
 };
@@ -70,6 +87,11 @@ const getOrderDetail = async (userId, orderId) => {
                 WHERE order_id = ? AND (SELECT user_id FROM orders WHERE id = ?) = ?`;
 
   let [result] = await pool.execute(sql, [orderId, orderId, userId]);
+
+  if (result.length === 0) {
+    throw new Error('주문 상세 정보를 찾을 수 없습니다.');
+  }
+
   result = result.map((item) => objectKeysToCamel(item));
   return result;
 };

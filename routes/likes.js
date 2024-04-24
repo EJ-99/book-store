@@ -4,7 +4,7 @@ const {
   checkValidationResult,
 } = require('../validators/commonValidator');
 const { addLike, deleteLike } = require('../controller/likeController');
-const authenticateToken = require('../auth');
+const { authenticateToken } = require('../auth');
 
 const router = express.Router();
 router.use(express.json());

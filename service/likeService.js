@@ -6,7 +6,9 @@ const addLike = async (userId, bookId) => {
 
   const [result] = await pool.execute(sql, values);
 
-  return result;
+  if (result.affectedRows === 0) {
+    throw new Error('좋아요 추가에 실패했습니다.');
+  }
 };
 
 const deleteLike = async (userId, bookId) => {
@@ -15,7 +17,9 @@ const deleteLike = async (userId, bookId) => {
 
   const [result] = await pool.execute(sql, values);
 
-  return result;
+  if (result.affectedRows === 0) {
+    throw new Error('좋아요 취소에 실패했습니다.');
+  }
 };
 
 module.exports = { addLike, deleteLike };
