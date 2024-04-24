@@ -18,6 +18,7 @@ const addLike = async (req, res) => {
   const bookId = req.params.id;
 
   try {
+    await service.checkAlreadyLike(userId, bookId);
     await service.addLike(userId, bookId);
     return res.status(StatusCodes.OK).end();
   } catch (err) {
