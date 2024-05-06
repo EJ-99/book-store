@@ -5,7 +5,7 @@ const {
   validateId,
 } = require('../validators/commonValidator');
 const { getAllBooks, getBookDetail } = require('../controller/bookController');
-const { authenticateToken } = require('../auth');
+const { checkToken } = require('../auth');
 
 const router = express.Router();
 router.use(express.json());
@@ -17,7 +17,7 @@ router.get('/', [validateGetBooks, checkValidationResult], getAllBooks);
 router.get(
   '/:id',
   [validateId, checkValidationResult],
-  authenticateToken,
+  checkToken,
   getBookDetail
 );
 

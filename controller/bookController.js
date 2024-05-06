@@ -13,10 +13,6 @@ const getAllBooks = async (req, res) => {
 const getBookDetail = async (req, res) => {
   let user = req.user;
 
-  if (user instanceof Error) {
-    user = null;
-  }
-
   const userId = user ? user.id : null;
   const bookId = parseInt(req.params.id);
 

@@ -1,19 +1,8 @@
 const { StatusCodes } = require('http-status-codes');
 const service = require('../service/orderService');
-const { handleTokenError } = require('../auth');
 
 const order = async (req, res) => {
   const user = req.user;
-
-  if (!user) {
-    return res
-      .status(StatusCodes.UNAUTHORIZED)
-      .json({ message: '로그인이 필요한 서비스입니다' });
-  }
-
-  const tokenError = handleTokenError(user, res);
-  if (tokenError) return tokenError;
-
   const userId = user.id;
   const { items, deliveryId, totalQuantity, totalPrice, firstBookTitle } =
     req.body;
@@ -30,16 +19,6 @@ const order = async (req, res) => {
 
 const getOrders = async (req, res) => {
   const user = req.user;
-
-  if (!user) {
-    return res
-      .status(StatusCodes.UNAUTHORIZED)
-      .json({ message: '로그인이 필요한 서비스입니다' });
-  }
-
-  const tokenError = handleTokenError(user, res);
-  if (tokenError) return tokenError;
-
   const userId = user.id;
 
   try {
@@ -53,16 +32,6 @@ const getOrders = async (req, res) => {
 
 const getOrderDetail = async (req, res) => {
   const user = req.user;
-
-  if (!user) {
-    return res
-      .status(StatusCodes.UNAUTHORIZED)
-      .json({ message: '로그인이 필요한 서비스입니다' });
-  }
-
-  const tokenError = handleTokenError(user, res);
-  if (tokenError) return tokenError;
-
   const userId = user.id;
   const { id: orderId } = req.params;
 
